@@ -385,7 +385,23 @@ main {
     background: white;
     padding: 1rem;
     min-height: 100px;
+    max-height: 120px;
     position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.calendar-day:hover:not(.other-month) {
+    background: #f0f4ff;
+}
+
+.calendar-day.has-events {
+    font-weight: 600;
+}
+
+.calendar-day.has-events .calendar-day-number {
+    color: #667eea;
 }
 
 .calendar-day.other-month {
@@ -402,25 +418,26 @@ main {
     margin-bottom: 0.5rem;
 }
 
-.calendar-event {
-    font-size: 0.75rem;
-    padding: 0.25rem 0.5rem;
-    margin-bottom: 0.25rem;
-    border-radius: 4px;
-    cursor: pointer;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+.calendar-event-indicator {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-right: 4px;
 }
 
-.calendar-event.formation {
-    background: #e3f2fd;
-    color: #1976d2;
+.calendar-event-indicator.formation {
+    background: #1976d2;
 }
 
-.calendar-event.conference {
-    background: #f3e5f5;
-    color: #7b1fa2;
+.calendar-event-indicator.conference {
+    background: #7b1fa2;
+}
+
+.calendar-day-events {
+    font-size: 0.7rem;
+    color: #667eea;
+    margin-top: 0.5rem;
 }
 
 .calendar-events-list {

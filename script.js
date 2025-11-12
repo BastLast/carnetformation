@@ -6,6 +6,7 @@ let currentDate = new Date();
 // Initialize the application
 document.addEventListener('DOMContentLoaded', async () => {
     await loadFormations();
+    populateDynamicFilters();
     setupEventListeners();
     renderListeView();
 });
@@ -54,6 +55,24 @@ function setupEventListeners() {
     // Calendar controls
     document.getElementById('prev-month').addEventListener('click', () => changeMonth(-1));
     document.getElementById('next-month').addEventListener('click', () => changeMonth(1));
+}
+
+// Populate dynamic filter options
+function populateDynamicFilters() {
+    // Get unique niveau values from formations
+    const niveaux = [...new Set(allFormations.map(f => f.niveau))].sort();
+    
+    const niveauSelect = document.getElementById('filter-niveau');
+    // Keep the "Tous" option
+    niveauSelect.innerHTML = '<option value="">Tous</option>';
+    
+    // Add all unique niveau values
+    niveaux.forEach(niveau => {
+        const option = document.createElement('option');
+        option.value = niveau;
+        option.textContent = niveau;
+        niveauSelect.appendChild(option);
+    });
 }
 
 // Switch between views
@@ -216,8 +235,7 @@ function createFormationCard(formation) {
             </div>
         ` : ''}
         <div class="card-actions">
-            <a href="${formation.lien_inscription}" class="btn-card btn-primary" target="_blank" rel="noopener">S'inscrire</a>
-            <a href="${formation.lien_details}" class="btn-card btn-secondary" target="_blank" rel="noopener">Détails</a>
+            <a href="${formation.lien}" class="btn-card btn-primary" target="_blank" rel="noopener">En savoir plus</a>
         </div>
     `;
 
@@ -275,18 +293,25 @@ function renderCalendar() {
         const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
         const isToday = date.toDateString() === today.toDateString();
 
-        dayElement.className = `calendar-day ${isToday ? 'today' : ''}`;
-        dayElement.innerHTML = `<div class="calendar-day-number">${day}</div>`;
-
         // Add events for this day
         const dayEvents = getEventsForDate(date);
-        dayEvents.forEach(formation => {
-            const event = document.createElement('div');
-            event.className = `calendar-event ${formation.type.toLowerCase()}`;
-            event.textContent = formation.titre;
-            event.title = `${formation.titre} - ${formation.horaire}`;
-            dayElement.appendChild(event);
-        });
+        const hasEvents = dayEvents.length > 0;
+        
+        dayElement.className = `calendar-day ${isToday ? 'today' : ''} ${hasEvents ? 'has-events' : ''}`;
+        dayElement.innerHTML = `<div class="calendar-day-number">${day}</div>`;
+
+        // Add event indicators
+        if (hasEvents) {
+            const eventsDiv = document.createElement('div');
+            eventsDiv.className = 'calendar-day-events';
+            eventsDiv.innerHTML = `${dayEvents.length} événement${dayEvents.length > 1 ? 's' : ''}`;
+            dayElement.appendChild(eventsDiv);
+        }
+
+        // Make day clickable to show events
+        if (hasEvents) {
+            dayElement.addEventListener('click', () => showDayEvents(date, dayEvents));
+        }
 
         grid.appendChild(dayElement);
     }
@@ -304,12 +329,41 @@ function renderCalendar() {
     container.appendChild(grid);
 }
 
+// Show events for a specific day
+function showDayEvents(date, events) {
+    const container = document.getElementById('calendar-events-list');
+    const dateStr = date.toLocaleDateString('fr-FR', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+    
+    container.innerHTML = `<h3>Événements du ${dateStr}</h3>`;
+    
+    events.forEach(formation => {
+        const item = document.createElement('div');
+        item.className = 'calendar-event-item';
+        item.innerHTML = `
+            <h4>${formation.titre}</h4>
+            <p><strong>Horaire:</strong> ${formation.horaire}</p>
+            <p><strong>Type:</strong> ${formation.type} | <strong>Format:</strong> ${formation.format}</p>
+            <p><strong>Prix:</strong> ${formation.prix}</p>
+            <div style="margin-top: 0.5rem;">
+                <a href="${formation.lien}" class="btn-card btn-primary" target="_blank" rel="noopener" style="display: inline-block; padding: 0.5rem 1rem;">En savoir plus</a>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
 // Render calendar events list
 function renderCalendarEvents() {
     const container = document.getElementById('calendar-events-list');
     
     // Get events for current month
     const monthEvents = filteredFormations.filter(formation => {
+        if (!formation.date || formation.date === '') return false;
         const formationDate = new Date(formation.date);
         return formationDate.getMonth() === currentDate.getMonth() &&
                formationDate.getFullYear() === currentDate.getFullYear();
@@ -336,7 +390,7 @@ function renderCalendarEvents() {
             <p><strong>Type:</strong> ${formation.type} | <strong>Format:</strong> ${formation.format}</p>
             <p><strong>Prix:</strong> ${formation.prix}</p>
             <div style="margin-top: 0.5rem;">
-                <a href="${formation.lien_inscription}" class="btn-card btn-primary" target="_blank" rel="noopener" style="display: inline-block; padding: 0.5rem 1rem;">S'inscrire</a>
+                <a href="${formation.lien}" class="btn-card btn-primary" target="_blank" rel="noopener" style="display: inline-block; padding: 0.5rem 1rem;">En savoir plus</a>
             </div>
         `;
         container.appendChild(item);
@@ -346,7 +400,7 @@ function renderCalendarEvents() {
 // Get events for a specific date
 function getEventsForDate(date) {
     const dateStr = date.toISOString().split('T')[0];
-    return filteredFormations.filter(formation => formation.date === dateStr);
+    return filteredFormations.filter(formation => formation.date && formation.date === dateStr);
 }
 
 // Change month
@@ -357,6 +411,9 @@ function changeMonth(delta) {
 
 // Format date
 function formatDate(dateStr) {
+    if (!dateStr || dateStr === '') {
+        return 'Toujours disponible';
+    }
     const date = new Date(dateStr);
     return date.toLocaleDateString('fr-FR', {
         day: 'numeric',
