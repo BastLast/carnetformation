@@ -18,7 +18,16 @@ async function loadFormations() {
             throw new Error('Failed to load formations');
         }
         allFormations = await response.json();
-        filteredFormations = [...allFormations];
+        // Filter out past formations by default (only show future or undated formations)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reset time to start of day
+        filteredFormations = allFormations.filter(formation => {
+            if (!formation.date || formation.date === '') {
+                return true; // Keep formations without dates
+            }
+            const formationDate = new Date(formation.date);
+            return formationDate >= today; // Only keep future formations
+        });
     } catch (error) {
         console.error('Error loading formations:', error);
         showError('Erreur lors du chargement des formations');
