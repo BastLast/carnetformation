@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalogue de Formations et Conférences</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>📚 Catalogue de Formations et Conférences</h1>
+            <p class="subtitle">Découvrez nos formations et conférences</p>
+        </div>
+    </header>
+
+    <nav class="main-nav">
+        <div class="container">
+            <button class="nav-btn active" data-view="liste">
+                <span class="icon">📋</span>
+                Liste
+            </button>
+            <button class="nav-btn" data-view="calendrier">
+                <span class="icon">📅</span>
+                Calendrier
+            </button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Filters Section -->
+        <aside class="filters">
+            <h3>Filtres</h3>
+            
+            <div class="filter-group">
+                <label for="filter-type">Type</label>
+                <select id="filter-type">
+                    <option value="">Tous</option>
+                    <option value="Formation">Formation</option>
+                    <option value="Conférence">Conférence</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="filter-niveau">Niveau</label>
+                <select id="filter-niveau">
+                    <option value="">Tous</option>
+                    <option value="Débutant">Débutant</option>
+                    <option value="Intermédiaire">Intermédiaire</option>
+                    <option value="Avancé">Avancé</option>
+                    <option value="Tous niveaux">Tous niveaux</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="filter-format">Format</label>
+                <select id="filter-format">
+                    <option value="">Tous</option>
+                    <option value="Présentiel">Présentiel</option>
+                    <option value="Distanciel">Distanciel</option>
+                    <option value="Hybride">Hybride</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="filter-certifiante">Certifiante</label>
+                <select id="filter-certifiante">
+                    <option value="">Toutes</option>
+                    <option value="true">Oui</option>
+                    <option value="false">Non</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="filter-search">Recherche</label>
+                <input type="text" id="filter-search" placeholder="Titre, description...">
+            </div>
+
+            <button class="btn-reset-filters">Réinitialiser les filtres</button>
+        </aside>
+
+        <!-- Content Section -->
+        <section class="content">
+            <!-- Liste View -->
+            <div id="liste-view" class="view active">
+                <div class="view-header">
+                    <h2>Liste des formations et conférences</h2>
+                    <div class="stats">
+                        <span id="results-count">Chargement...</span>
+                    </div>
+                </div>
+                <div id="liste-container" class="cards-container">
+                    <!-- Cards will be dynamically inserted here -->
+                </div>
+            </div>
+
+            <!-- Calendrier View -->
+            <div id="calendrier-view" class="view">
+                <div class="view-header">
+                    <h2>Calendrier</h2>
+                    <div class="calendar-controls">
+                        <button id="prev-month" class="btn-calendar">◀ Mois précédent</button>
+                        <span id="current-month" class="current-month"></span>
+                        <button id="next-month" class="btn-calendar">Mois suivant ▶</button>
+                    </div>
+                </div>
+                <div id="calendar-container"></div>
+                <div id="calendar-events-list" class="calendar-events-list"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Catalogue de Formations. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
