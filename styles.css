@@ -203,7 +203,6 @@ main {
 .formation-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-    border-color: #667eea;
 }
 
 .card-header {
@@ -317,7 +316,8 @@ main {
 }
 
 .btn-primary:hover {
-    background: #5568d3;
+    filter: brightness(0.9);
+    transform: translateY(-2px);
 }
 
 .btn-secondary {
