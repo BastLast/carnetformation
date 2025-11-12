@@ -1,0 +1,369 @@
+// Global state
+let allFormations = [];
+let filteredFormations = [];
+let currentDate = new Date();
+
+// Initialize the application
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadFormations();
+    setupEventListeners();
+    renderListeView();
+});
+
+// Load formations from JSON file
+async function loadFormations() {
+    try {
+        const response = await fetch('formations.json');
+        if (!response.ok) {
+            throw new Error('Failed to load formations');
+        }
+        allFormations = await response.json();
+        filteredFormations = [...allFormations];
+    } catch (error) {
+        console.error('Error loading formations:', error);
+        showError('Erreur lors du chargement des formations');
+    }
+}
+
+// Setup event listeners
+function setupEventListeners() {
+    // Navigation buttons
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => switchView(btn.dataset.view));
+    });
+
+    // Filter controls
+    document.getElementById('filter-type').addEventListener('change', applyFilters);
+    document.getElementById('filter-niveau').addEventListener('change', applyFilters);
+    document.getElementById('filter-format').addEventListener('change', applyFilters);
+    document.getElementById('filter-certifiante').addEventListener('change', applyFilters);
+    document.getElementById('filter-search').addEventListener('input', applyFilters);
+
+    // Reset filters button
+    document.querySelector('.btn-reset-filters').addEventListener('click', resetFilters);
+
+    // Calendar controls
+    document.getElementById('prev-month').addEventListener('click', () => changeMonth(-1));
+    document.getElementById('next-month').addEventListener('click', () => changeMonth(1));
+}
+
+// Switch between views
+function switchView(viewName) {
+    // Update navigation buttons
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.view === viewName);
+    });
+
+    // Update views
+    document.querySelectorAll('.view').forEach(view => {
+        view.classList.remove('active');
+    });
+
+    const targetView = document.getElementById(`${viewName}-view`);
+    targetView.classList.add('active');
+
+    // Render the appropriate view
+    if (viewName === 'liste') {
+        renderListeView();
+    } else if (viewName === 'calendrier') {
+        renderCalendrierView();
+    }
+}
+
+// Apply filters
+function applyFilters() {
+    const typeFilter = document.getElementById('filter-type').value;
+    const niveauFilter = document.getElementById('filter-niveau').value;
+    const formatFilter = document.getElementById('filter-format').value;
+    const certifianteFilter = document.getElementById('filter-certifiante').value;
+    const searchFilter = document.getElementById('filter-search').value.toLowerCase();
+
+    filteredFormations = allFormations.filter(formation => {
+        // Type filter
+        if (typeFilter && formation.type !== typeFilter) return false;
+
+        // Niveau filter
+        if (niveauFilter && formation.niveau !== niveauFilter) return false;
+
+        // Format filter
+        if (formatFilter && formation.format !== formatFilter) return false;
+
+        // Certifiante filter
+        if (certifianteFilter) {
+            const isCertifiante = certifianteFilter === 'true';
+            if (formation.certifiante !== isCertifiante) return false;
+        }
+
+        // Search filter
+        if (searchFilter) {
+            const searchText = `${formation.titre} ${formation.description} ${formation.categorie}`.toLowerCase();
+            if (!searchText.includes(searchFilter)) return false;
+        }
+
+        return true;
+    });
+
+    // Re-render current view
+    const activeView = document.querySelector('.view.active');
+    if (activeView.id === 'liste-view') {
+        renderListeView();
+    } else {
+        renderCalendrierView();
+    }
+}
+
+// Reset filters
+function resetFilters() {
+    document.getElementById('filter-type').value = '';
+    document.getElementById('filter-niveau').value = '';
+    document.getElementById('filter-format').value = '';
+    document.getElementById('filter-certifiante').value = '';
+    document.getElementById('filter-search').value = '';
+    applyFilters();
+}
+
+// Render Liste View
+function renderListeView() {
+    const container = document.getElementById('liste-container');
+    const resultsCount = document.getElementById('results-count');
+
+    // Update results count
+    resultsCount.textContent = `${filteredFormations.length} résultat${filteredFormations.length > 1 ? 's' : ''}`;
+
+    // Clear container
+    container.innerHTML = '';
+
+    if (filteredFormations.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">🔍</div>
+                <h3>Aucune formation ou conférence trouvée</h3>
+                <p>Essayez de modifier vos critères de recherche</p>
+            </div>
+        `;
+        return;
+    }
+
+    // Create cards
+    filteredFormations.forEach(formation => {
+        const card = createFormationCard(formation);
+        container.appendChild(card);
+    });
+}
+
+// Create formation card
+function createFormationCard(formation) {
+    const card = document.createElement('div');
+    card.className = 'formation-card';
+
+    const formattedDate = formatDate(formation.date);
+    const typeClass = formation.type.toLowerCase();
+
+    card.innerHTML = `
+        <div class="card-header">
+            <span class="card-type ${typeClass}">${formation.type}</span>
+            ${formation.certifiante ? '<span class="card-certifiante">✓ Certifiante</span>' : ''}
+        </div>
+        <h3 class="card-title">${formation.titre}</h3>
+        <div class="card-categorie">${formation.categorie}</div>
+        <p class="card-description">${formation.description}</p>
+        <div class="card-info">
+            <div class="info-item">
+                <strong>📅</strong>
+                <span>${formattedDate}</span>
+            </div>
+            <div class="info-item">
+                <strong>⏰</strong>
+                <span>${formation.horaire}</span>
+            </div>
+            <div class="info-item">
+                <strong>⏱️</strong>
+                <span>${formation.duree}</span>
+            </div>
+            <div class="info-item">
+                <strong>📊</strong>
+                <span>${formation.niveau}</span>
+            </div>
+            <div class="info-item">
+                <strong>💰</strong>
+                <span>${formation.prix}</span>
+            </div>
+            <div class="info-item">
+                <strong>📍</strong>
+                <span>${formation.format}</span>
+            </div>
+        </div>
+        ${formation.modules.length > 0 ? `
+            <div class="card-modules">
+                <strong>Modules:</strong>
+                <ul style="margin-left: 1.5rem; margin-top: 0.5rem; color: #666;">
+                    ${formation.modules.map(m => `<li>${m}</li>`).join('')}
+                </ul>
+            </div>
+        ` : ''}
+        ${formation.tags.length > 0 ? `
+            <div class="card-tags">
+                ${formation.tags.map(tag => `<span class="tag">#${tag}</span>`).join('')}
+            </div>
+        ` : ''}
+        <div class="card-actions">
+            <a href="${formation.lien_inscription}" class="btn-card btn-primary" target="_blank" rel="noopener">S'inscrire</a>
+            <a href="${formation.lien_details}" class="btn-card btn-secondary" target="_blank" rel="noopener">Détails</a>
+        </div>
+    `;
+
+    return card;
+}
+
+// Render Calendrier View
+function renderCalendrierView() {
+    renderCalendar();
+    renderCalendarEvents();
+}
+
+// Render calendar grid
+function renderCalendar() {
+    const container = document.getElementById('calendar-container');
+    const monthLabel = document.getElementById('current-month');
+
+    // Update month label
+    const monthName = currentDate.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+    monthLabel.textContent = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+
+    // Create calendar grid
+    const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    const firstDayOfWeek = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1; // Monday = 0
+    const daysInMonth = lastDay.getDate();
+
+    // Get previous month's last days
+    const prevMonthLastDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate();
+
+    const grid = document.createElement('div');
+    grid.className = 'calendar-grid';
+
+    // Day headers
+    const dayNames = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+    dayNames.forEach(day => {
+        const header = document.createElement('div');
+        header.className = 'calendar-day-header';
+        header.textContent = day;
+        grid.appendChild(header);
+    });
+
+    // Previous month days
+    for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+        const day = document.createElement('div');
+        day.className = 'calendar-day other-month';
+        day.innerHTML = `<div class="calendar-day-number">${prevMonthLastDay - i}</div>`;
+        grid.appendChild(day);
+    }
+
+    // Current month days
+    const today = new Date();
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dayElement = document.createElement('div');
+        const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+        const isToday = date.toDateString() === today.toDateString();
+
+        dayElement.className = `calendar-day ${isToday ? 'today' : ''}`;
+        dayElement.innerHTML = `<div class="calendar-day-number">${day}</div>`;
+
+        // Add events for this day
+        const dayEvents = getEventsForDate(date);
+        dayEvents.forEach(formation => {
+            const event = document.createElement('div');
+            event.className = `calendar-event ${formation.type.toLowerCase()}`;
+            event.textContent = formation.titre;
+            event.title = `${formation.titre} - ${formation.horaire}`;
+            dayElement.appendChild(event);
+        });
+
+        grid.appendChild(dayElement);
+    }
+
+    // Next month days
+    const remainingDays = 42 - (firstDayOfWeek + daysInMonth); // 6 rows * 7 days
+    for (let day = 1; day <= remainingDays; day++) {
+        const dayElement = document.createElement('div');
+        dayElement.className = 'calendar-day other-month';
+        dayElement.innerHTML = `<div class="calendar-day-number">${day}</div>`;
+        grid.appendChild(dayElement);
+    }
+
+    container.innerHTML = '';
+    container.appendChild(grid);
+}
+
+// Render calendar events list
+function renderCalendarEvents() {
+    const container = document.getElementById('calendar-events-list');
+    
+    // Get events for current month
+    const monthEvents = filteredFormations.filter(formation => {
+        const formationDate = new Date(formation.date);
+        return formationDate.getMonth() === currentDate.getMonth() &&
+               formationDate.getFullYear() === currentDate.getFullYear();
+    }).sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    if (monthEvents.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">📅</div>
+                <h3>Aucun événement ce mois-ci</h3>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = '<h3>Événements du mois</h3>';
+    
+    monthEvents.forEach(formation => {
+        const item = document.createElement('div');
+        item.className = 'calendar-event-item';
+        item.innerHTML = `
+            <h4>${formation.titre}</h4>
+            <p><strong>Date:</strong> ${formatDate(formation.date)} - ${formation.horaire}</p>
+            <p><strong>Type:</strong> ${formation.type} | <strong>Format:</strong> ${formation.format}</p>
+            <p><strong>Prix:</strong> ${formation.prix}</p>
+            <div style="margin-top: 0.5rem;">
+                <a href="${formation.lien_inscription}" class="btn-card btn-primary" target="_blank" rel="noopener" style="display: inline-block; padding: 0.5rem 1rem;">S'inscrire</a>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+// Get events for a specific date
+function getEventsForDate(date) {
+    const dateStr = date.toISOString().split('T')[0];
+    return filteredFormations.filter(formation => formation.date === dateStr);
+}
+
+// Change month
+function changeMonth(delta) {
+    currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + delta, 1);
+    renderCalendrierView();
+}
+
+// Format date
+function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+}
+
+// Show error
+function showError(message) {
+    const container = document.getElementById('liste-container');
+    container.innerHTML = `
+        <div class="empty-state">
+            <div class="empty-state-icon">⚠️</div>
+            <h3>Erreur</h3>
+            <p>${message}</p>
+        </div>
+    `;
+}
