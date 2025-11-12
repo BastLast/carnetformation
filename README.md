@@ -15,22 +15,25 @@ L'application est entièrement en français et conçue pour être facile à util
 
 ## 🚀 Utilisation
 
-Pour utiliser l'application, il suffit d'ouvrir le fichier `index.html` dans un navigateur web moderne. Aucune installation n'est nécessaire.
-
-Vous pouvez également utiliser un serveur web local :
-```bash
-# Avec Python 3
-python3 -m http.server 8080
-
-# Avec Node.js (npx)
-npx http-server -p 8080
-```
-
-Puis ouvrez votre navigateur à l'adresse : `http://localhost:8080`
+L'application est accessible en ligne via GitHub Pages ou en ouvrant simplement le fichier `index.html` dans un navigateur web moderne. Aucune installation n'est nécessaire.
 
 ## ✏️ Comment Mettre à Jour le Fichier formations.json
 
-Le fichier `formations.json` contient toutes les formations et conférences affichées dans le catalogue. Voici comment le modifier :
+Le fichier `formations.json` contient toutes les formations et conférences affichées dans le catalogue. 
+
+### 📝 Modifier via l'Interface GitHub (recommandé pour débutants)
+
+**Vous n'avez besoin d'aucune connaissance technique !** Suivez simplement ces étapes :
+
+1. **Connectez-vous** à GitHub avec votre compte
+2. **Naviguez** jusqu'au fichier `formations.json` dans le dépôt
+3. **Cliquez** sur l'icône ✏️ (crayon) en haut à droite du fichier pour l'éditer
+4. **Modifiez** le contenu directement dans l'éditeur web (voir ci-dessous pour la structure)
+5. **Descendez** en bas de la page et ajoutez un message décrivant vos changements (ex: "Ajout d'une nouvelle formation sur l'autisme")
+6. **Cliquez** sur le bouton vert "Commit changes" pour enregistrer vos modifications
+7. **Attendez** quelques secondes : le site se met automatiquement à jour !
+
+⚠️ **Attention** : Respectez bien la structure JSON (guillemets, virgules, crochets). Si vous faites une erreur, l'éditeur GitHub vous le signalera en rouge.
 
 ### Structure d'une Formation
 
@@ -111,47 +114,65 @@ La description doit être **concise** et ne pas répéter les informations déj�
 
 ### Ajouter une Nouvelle Formation
 
-1. Ouvrez le fichier `formations.json`
-2. Ajoutez une virgule après la dernière formation
-3. Copiez le modèle ci-dessus
-4. Remplissez tous les champs
-5. Vérifiez que le JSON est valide (utilisez un validateur JSON en ligne si besoin)
-6. Sauvegardez le fichier
+**Via l'interface GitHub :**
 
-### Vérifier la Validité du JSON
+1. **Ouvrez** le fichier `formations.json` en cliquant sur le nom du fichier
+2. **Cliquez** sur l'icône ✏️ (crayon) pour l'éditer
+3. **Trouvez** la dernière formation dans la liste (cherchez le dernier `}` avant le `]` final)
+4. **Ajoutez une virgule** après le `}` de la dernière formation
+5. **Copiez-collez** le modèle ci-dessus
+6. **Remplissez** tous les champs avec les informations de votre nouvelle formation
+7. **Vérifiez** que :
+   - Tous les textes sont entre guillemets `"comme ceci"`
+   - Les virgules sont bien placées entre chaque ligne (sauf la dernière ligne d'un bloc)
+   - Les crochets `[]` et accolades `{}` sont bien fermés
+8. **Enregistrez** en cliquant sur "Commit changes" en bas de la page
 
-Après modification, vérifiez que le fichier est valide :
-- Utilisez un éditeur avec validation JSON (VS Code, Sublime Text)
-- Ou utilisez un validateur en ligne : https://jsonlint.com/
-- Testez dans le navigateur que les formations s'affichent correctement
+### ⚠️ Erreurs Courantes à Éviter
 
-## 📁 Structure des Fichiers
+- ❌ **Oublier une virgule** entre deux formations → L'éditeur GitHub le signalera en rouge
+- ❌ **Virgule en trop** après la dernière formation → Retirez-la !
+- ❌ **Guillemets oubliés** autour des textes → Tous les textes doivent être entre `"guillemets"`
+- ❌ **Date mal formatée** → Utilisez le format AAAA-MM-JJ (ex: 2025-12-25) ou `""` pour toujours disponible
 
+💡 **Astuce** : Si GitHub affiche une erreur en rouge, lisez le message qui vous indique où se trouve le problème (ligne et colonne).
+
+## 🎯 Exemples de Modifications Courantes
+
+### Modifier le prix d'une formation
+```json
+"prix": "15€",  ← Changez simplement le texte entre guillemets
 ```
-carnetformation/
-├── index.html          # Page HTML principale
-├── script.js           # Logique JavaScript de l'application
-├── styles.css          # Feuille de styles
-├── formations.json     # Données des formations (à modifier)
-└── README.md          # Ce fichier
+
+### Changer une date
+```json
+"date": "2025-12-25",  ← Format : Année-Mois-Jour
 ```
 
-## 🛠️ Technologies Utilisées
+### Ajouter un tag
+```json
+"tags": ["Tag1", "Tag2", "NouveauTag"],  ← Ajoutez-le à la fin avec une virgule
+```
 
-- **HTML5** : Structure de la page
-- **CSS3** : Mise en forme et design responsive
-- **JavaScript (Vanilla)** : Logique applicative, pas de framework
-- **JSON** : Format de données pour les formations
+### Rendre une formation toujours disponible
+```json
+"date": "",  ← Laissez vide entre guillemets
+```
+
+## ❓ Besoin d'Aide ?
+
+- **Validation automatique** : L'éditeur GitHub vérifie automatiquement votre code et affiche les erreurs
+- **Prévisualisation** : Après avoir enregistré, attendez quelques secondes et actualisez le site pour voir vos changements
+- **Problème** : Si le site ne s'affiche plus correctement, regardez l'historique des modifications (onglet "History" sur GitHub) et annulez votre dernier changement
+
+## 📁 Fichiers du Projet
+
+- **formations.json** : Le fichier que vous modifierez le plus souvent (liste des formations)
+- **index.html** : La structure de la page web (ne pas modifier sauf besoin avancé)
+- **script.js** : Le code qui fait fonctionner le site (ne pas modifier)
+- **styles.css** : La mise en forme visuelle du site (ne pas modifier)
+- **README.md** : Ce guide d'utilisation
 
 ## 📝 Licence
 
 Voir le fichier LICENSE pour plus d'informations.
-
-## 🤝 Contribution
-
-Pour contribuer :
-1. Forkez le projet
-2. Créez une branche pour votre fonctionnalité
-3. Commitez vos changements
-4. Poussez vers la branche
-5. Ouvrez une Pull Request

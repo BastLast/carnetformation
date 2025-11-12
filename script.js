@@ -6,6 +6,7 @@ let currentDate = new Date();
 // Initialize the application
 document.addEventListener('DOMContentLoaded', async () => {
     await loadFormations();
+    populateDynamicFilters();
     setupEventListeners();
     renderListeView();
 });
@@ -54,6 +55,24 @@ function setupEventListeners() {
     // Calendar controls
     document.getElementById('prev-month').addEventListener('click', () => changeMonth(-1));
     document.getElementById('next-month').addEventListener('click', () => changeMonth(1));
+}
+
+// Populate dynamic filter options
+function populateDynamicFilters() {
+    // Get unique niveau values from formations
+    const niveaux = [...new Set(allFormations.map(f => f.niveau))].sort();
+    
+    const niveauSelect = document.getElementById('filter-niveau');
+    // Keep the "Tous" option
+    niveauSelect.innerHTML = '<option value="">Tous</option>';
+    
+    // Add all unique niveau values
+    niveaux.forEach(niveau => {
+        const option = document.createElement('option');
+        option.value = niveau;
+        option.textContent = niveau;
+        niveauSelect.appendChild(option);
+    });
 }
 
 // Switch between views
