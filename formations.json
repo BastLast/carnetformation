@@ -169,5 +169,25 @@
     "tags": ["Féminisme", "Violences", "Genre", "Accompagnement"],
     "certifiante": false,
     "format": "Distanciel"
+  },
+  {
+    "id": "ergo-006",
+    "categorie": "Ergo",
+    "titre": "Atelier pratique en ergothérapie pédiatrique",
+    "description": "Atelier pratique pour découvrir les outils et techniques d'intervention en ergothérapie auprès des enfants.",
+    "modules": ["Évaluation des capacités motrices", "Outils d'intervention", "Cas pratiques"],
+    "duree": "3 heures",
+    "type": "Formation",
+    "prix": "50€",
+    "date": "2025-12-20",
+    "horaire": "14:00-17:00",
+    "niveau": "Intermédiaire",
+    "lien": "https://example.com/atelier-ergo",
+    "organisateur": "Centre de formation Ergo",
+    "public_cible": ["Ergothérapeutes", "Étudiants"],
+    "tags": ["Pédiatrie", "Pratique", "Atelier"],
+    "certifiante": false,
+    "format": "Présentiel",
+    "localisation": "Paris, 15ème arrondissement"
   }
 ]

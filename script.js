@@ -2,6 +2,7 @@
 let allFormations = [];
 let filteredFormations = [];
 let currentDate = new Date();
+let categoryColors = {};
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', async () => {
@@ -44,6 +45,7 @@ function setupEventListeners() {
 
     // Filter controls
     document.getElementById('filter-type').addEventListener('change', applyFilters);
+    document.getElementById('filter-categorie').addEventListener('change', applyFilters);
     document.getElementById('filter-niveau').addEventListener('change', applyFilters);
     document.getElementById('filter-format').addEventListener('change', applyFilters);
     document.getElementById('filter-certifiante').addEventListener('change', applyFilters);
@@ -57,8 +59,44 @@ function setupEventListeners() {
     document.getElementById('next-month').addEventListener('click', () => changeMonth(1));
 }
 
+// Generate dynamic colors for categories
+function generateCategoryColors() {
+    const categories = [...new Set(allFormations.map(f => f.categorie))].sort();
+    
+    // Define color palette - vibrant and distinct colors
+    const colorPalette = [
+        { border: '#3498db', background: '#ebf5fb', button: '#2980b9' }, // Blue
+        { border: '#e74c3c', background: '#fadbd8', button: '#c0392b' }, // Red
+        { border: '#2ecc71', background: '#d5f4e6', button: '#27ae60' }, // Green
+        { border: '#f39c12', background: '#fef5e7', button: '#d68910' }, // Orange
+        { border: '#9b59b6', background: '#f4ecf7', button: '#7d3c98' }, // Purple
+        { border: '#1abc9c', background: '#d1f2eb', button: '#16a085' }, // Turquoise
+        { border: '#e67e22', background: '#fdebd0', button: '#ca6f1e' }, // Carrot
+        { border: '#34495e', background: '#eaecee', button: '#2c3e50' }, // Dark Gray
+        { border: '#16a085', background: '#d0ece7', button: '#138d75' }, // Teal
+        { border: '#8e44ad', background: '#ebdef0', button: '#7d3c98' }, // Violet
+    ];
+    
+    categories.forEach((category, index) => {
+        categoryColors[category] = colorPalette[index % colorPalette.length];
+    });
+}
+
 // Populate dynamic filter options
 function populateDynamicFilters() {
+    // Get unique categories
+    const categories = [...new Set(allFormations.map(f => f.categorie))].sort();
+    
+    const categorieSelect = document.getElementById('filter-categorie');
+    categorieSelect.innerHTML = '<option value="">Toutes</option>';
+    
+    categories.forEach(categorie => {
+        const option = document.createElement('option');
+        option.value = categorie;
+        option.textContent = categorie;
+        categorieSelect.appendChild(option);
+    });
+    
     // Get unique niveau values from formations
     const niveaux = [...new Set(allFormations.map(f => f.niveau))].sort();
     
@@ -73,6 +111,9 @@ function populateDynamicFilters() {
         option.textContent = niveau;
         niveauSelect.appendChild(option);
     });
+    
+    // Generate colors for categories
+    generateCategoryColors();
 }
 
 // Switch between views
@@ -101,6 +142,7 @@ function switchView(viewName) {
 // Apply filters
 function applyFilters() {
     const typeFilter = document.getElementById('filter-type').value;
+    const categorieFilter = document.getElementById('filter-categorie').value;
     const niveauFilter = document.getElementById('filter-niveau').value;
     const formatFilter = document.getElementById('filter-format').value;
     const certifianteFilter = document.getElementById('filter-certifiante').value;
@@ -109,6 +151,9 @@ function applyFilters() {
     filteredFormations = allFormations.filter(formation => {
         // Type filter
         if (typeFilter && formation.type !== typeFilter) return false;
+
+        // Categorie filter
+        if (categorieFilter && formation.categorie !== categorieFilter) return false;
 
         // Niveau filter
         if (niveauFilter && formation.niveau !== niveauFilter) return false;
@@ -143,6 +188,7 @@ function applyFilters() {
 // Reset filters
 function resetFilters() {
     document.getElementById('filter-type').value = '';
+    document.getElementById('filter-categorie').value = '';
     document.getElementById('filter-niveau').value = '';
     document.getElementById('filter-format').value = '';
     document.getElementById('filter-certifiante').value = '';
@@ -186,6 +232,16 @@ function createFormationCard(formation) {
 
     const formattedDate = formatDate(formation.date);
     const typeClass = formation.type.toLowerCase();
+    
+    // Get category colors
+    const colors = categoryColors[formation.categorie] || { border: '#667eea', background: '#f0f4ff', button: '#5568d3' };
+    
+    // Apply category border color
+    card.style.borderColor = colors.border;
+    card.style.borderWidth = '3px';
+    
+    // Check if location should be displayed (only for Présentiel or Hybride)
+    const showLocation = (formation.format === 'Présentiel' || formation.format === 'Hybride') && formation.localisation;
 
     card.innerHTML = `
         <div class="card-header">
@@ -193,7 +249,7 @@ function createFormationCard(formation) {
             ${formation.certifiante ? '<span class="card-certifiante">✓ Certifiante</span>' : ''}
         </div>
         <h3 class="card-title">${formation.titre}</h3>
-        <div class="card-categorie">${formation.categorie}</div>
+        <div class="card-categorie" style="color: ${colors.border};">${formation.categorie}</div>
         <p class="card-description">${formation.description}</p>
         <div class="card-info">
             <div class="info-item">
@@ -220,6 +276,12 @@ function createFormationCard(formation) {
                 <strong>📍</strong>
                 <span>${formation.format}</span>
             </div>
+            ${showLocation ? `
+                <div class="info-item">
+                    <strong>🗺️</strong>
+                    <span>${formation.localisation}</span>
+                </div>
+            ` : ''}
         </div>
         ${formation.modules.length > 0 ? `
             <div class="card-modules">
@@ -235,7 +297,7 @@ function createFormationCard(formation) {
             </div>
         ` : ''}
         <div class="card-actions">
-            <a href="${formation.lien}" class="btn-card btn-primary" target="_blank" rel="noopener">En savoir plus</a>
+            <a href="${formation.lien}" class="btn-card btn-primary" target="_blank" rel="noopener" style="background-color: ${colors.button}; border-color: ${colors.button};">En savoir plus</a>
         </div>
     `;
 
