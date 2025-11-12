@@ -65,16 +65,16 @@ function generateCategoryColors() {
     
     // Define color palette - vibrant and distinct colors
     const colorPalette = [
-        { border: '#3498db', background: '#ebf5fb', button: '#2980b9' }, // Blue
-        { border: '#e74c3c', background: '#fadbd8', button: '#c0392b' }, // Red
-        { border: '#2ecc71', background: '#d5f4e6', button: '#27ae60' }, // Green
-        { border: '#f39c12', background: '#fef5e7', button: '#d68910' }, // Orange
-        { border: '#9b59b6', background: '#f4ecf7', button: '#7d3c98' }, // Purple
-        { border: '#1abc9c', background: '#d1f2eb', button: '#16a085' }, // Turquoise
-        { border: '#e67e22', background: '#fdebd0', button: '#ca6f1e' }, // Carrot
-        { border: '#34495e', background: '#eaecee', button: '#2c3e50' }, // Dark Gray
-        { border: '#16a085', background: '#d0ece7', button: '#138d75' }, // Teal
-        { border: '#8e44ad', background: '#ebdef0', button: '#7d3c98' }, // Violet
+        { border: '#3498db', button: '#2980b9' }, // Blue
+        { border: '#e74c3c', button: '#c0392b' }, // Red
+        { border: '#2ecc71', button: '#27ae60' }, // Green
+        { border: '#f39c12', button: '#d68910' }, // Orange
+        { border: '#9b59b6', button: '#7d3c98' }, // Purple
+        { border: '#1abc9c', button: '#16a085' }, // Turquoise
+        { border: '#e8f716', button: '#f1fc53' }, // Jaune
+        { border: '#34495e', button: '#2c3e50' }, // Dark Gray
+        { border: '#72e5fc', button: '#80eaff' }, // Bleu clair
+        { border: '#c19fcf', button: '#c8abd4' }, // Mauve
     ];
     
     categories.forEach((category, index) => {
@@ -234,7 +234,7 @@ function createFormationCard(formation) {
     const typeClass = formation.type.toLowerCase();
     
     // Get category colors
-    const colors = categoryColors[formation.categorie] || { border: '#667eea', background: '#f0f4ff', button: '#5568d3' };
+    const colors = categoryColors[formation.categorie] || { border: '#667eea', button: '#5568d3' };
     
     // Apply category border color
     card.style.borderColor = colors.border;
