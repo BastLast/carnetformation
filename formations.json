@@ -169,5 +169,24 @@
     "tags": ["Féminisme", "Violences", "Genre", "Accompagnement"],
     "certifiante": false,
     "format": "Distanciel"
+  },
+   {
+    "id": "ergo-006",
+    "categorie": "Ergo",
+    "titre": "Syndrome d’Ehlers-Danlos",
+    "description": "Conférence consacrée au Syndrome d’Ehlers-Danlos, en présence de nombreux professionnels de santé spécialisés",
+    "modules": [],
+    "duree": "",
+    "type": "Conférence",
+    "prix": "Gratuit",
+    "date": "2025-12-04",
+    "horaire": "19:00",
+    "niveau": "Tous niveaux",
+    "lien": "https://docs.google.com/forms/d/e/1FAIpQLSeNdgB1FFalVvqmCYpQ4Pm8wjkj1fp4LU-v064GiFQvyEkpKQ/viewform",
+    "organisateur": "Association Sed'Occ",
+    "public_cible": ["Tout public"],
+    "tags": ["Syndrome", "Ehlers-Danlos", "ED", "Ergo"],
+    "certifiante": false,
+    "format": "Distanciel ou Présentiel"
   }
 ]
